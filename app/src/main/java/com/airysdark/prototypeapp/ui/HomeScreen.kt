@@ -26,10 +26,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.airysdark.prototypeapp.data.Profile
+import com.airysdark.prototypeapp.networking.NearbyPeer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(initialProfile: Profile, pseudonymousId: String, onSaveProfile: (Profile) -> Unit) {
+fun HomeScreen(
+    initialProfile: Profile,
+    pseudonymousId: String,
+    nearbyPeers: List<NearbyPeer>,
+    discoveryStatus: String,
+    onSaveProfile: (Profile) -> Unit,
+    onStartDiscovery: () -> Unit,
+    onStopDiscovery: () -> Unit
+) {
     var name by remember { mutableStateOf(initialProfile.pseudonym) }
     var ageText by remember { mutableStateOf(initialProfile.age.toString()) }
     var bio by remember { mutableStateOf(initialProfile.bio) }
@@ -47,7 +56,7 @@ fun HomeScreen(initialProfile: Profile, pseudonymousId: String, onSaveProfile: (
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text("Privacy by design", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
-                    Text("Your profile is encrypted and saved locally. Nearby discovery is not active in this prototype.")
+                    Text("Your profile is encrypted and saved locally. Nearby discovery broadcasts only a rotating random token, never your profile.")
                     Text("Local ID: ${pseudonymousId.take(8)}…")
                 }
             }
@@ -62,10 +71,13 @@ fun HomeScreen(initialProfile: Profile, pseudonymousId: String, onSaveProfile: (
             OutlinedTextField(value = lookingFor, onValueChange = { lookingFor = it.take(80) },
                 label = { Text("Looking for") }, singleLine = true, modifier = Modifier.fillMaxWidth())
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(checked = discoverable, onCheckedChange = { discoverable = it })
+                Checkbox(checked = discoverable, onCheckedChange = {
+                    discoverable = it
+                    if (!it) onStopDiscovery()
+                })
                 Column {
-                    Text("Opt into discovery")
-                    Text("Preference only; broadcasting is not implemented yet.")
+                    Text("Opt into nearby discovery")
+                    Text("Your device is not discoverable unless you opt in and start it.")
                 }
             }
             Button(onClick = {
@@ -79,7 +91,33 @@ fun HomeScreen(initialProfile: Profile, pseudonymousId: String, onSaveProfile: (
             }, modifier = Modifier.fillMaxWidth()) { Text("Save profile") }
             Text(status)
             HorizontalDivider()
-            Text("Next: BLE discovery, peer connections, chat, block/report, and consent-based photo sharing.")
+            Text("Nearby discovery", style = androidx.compose.material3.MaterialTheme.typography.titleLarge)
+            Text("BLE presence only. This does not yet exchange profiles, authenticate peers, or provide chat.")
+            Button(
+                onClick = onStartDiscovery,
+                enabled = discoverable,
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Start nearby discovery") }
+            Button(onClick = onStopDiscovery, modifier = Modifier.fillMaxWidth()) {
+                Text("Stop discovery")
+            }
+            Text(discoveryStatus)
+            if (nearbyPeers.isEmpty()) {
+                Text("No nearby members detected.")
+            } else {
+                Text("Nearby devices (${nearbyPeers.size})", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
+                nearbyPeers.forEach { peer ->
+                    Card(modifier = Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text(peer.displayName)
+                            Text("Temporary ID: ${peer.ephemeralId.take(8)}…")
+                            Text(peer.transport)
+                        }
+                    }
+                }
+            }
+            HorizontalDivider()
+            Text("Next: authenticated peer handshakes, private messaging, block/report, and consent-based photo sharing.")
         }
     }
 }
