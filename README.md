@@ -1,32 +1,43 @@
 # Prototypeapp
 
-A local-first, pseudonymous Android app for consensual nearby dating and hookups.
+A local-first, pseudonymous Android app for consensual dating and hookups between adults.
 
 ## Principles
-- Profiles and profile photos stay on the device unless the user explicitly shares them.
+- Profiles are encrypted and stored locally; profile details are not broadcast over BLE.
 - Pseudonymous local identity; no public legal name required.
-- Nearby discovery is opt-in and should expose only a minimal profile card.
-- Network transports are replaceable: nearby BLE discovery and internet WebRTC are separate layers.
-- Safety controls (block, report, visibility off) are core requirements, not add-ons.
+- Nearby discovery is opt-in and stops when the app leaves the foreground.
+- BLE uses a random 8-byte token that rotates every 15 minutes.
+- Safety controls (block, report, visibility off) are required before public release.
 
-## Current status
-This is the initial Android foundation. It includes a Compose UI, encrypted local profile storage using Android Keystore AES-GCM, and explicit interfaces for discovery and peer transport. BLE discovery and WebRTC signaling are scaffolds, not yet end-to-end working. WebRTC internet connections require a signaling path and often STUN/TURN infrastructure; that signaling service must not become a central profile database.
+## Current status — v0.2.0
+Implemented:
+- Native Kotlin + Jetpack Compose profile editor with age validation (18+).
+- AES-GCM encrypted local profile storage using an Android Keystore key.
+- Local pseudonymous ID.
+- BLE scanning and non-connectable advertising using custom service data.
+- Runtime Bluetooth permission requests for Android 12+ and location permission for older Android versions.
+- A visible start/stop control, foreground-only discovery, temporary nearby IDs, and stale-peer cleanup.
+
+Not implemented:
+- Exchanging profiles or proving that a nearby token belongs to a specific person.
+- Authenticated peer handshakes, private chat, WebRTC, signaling, photo sharing, block/report flows, or server infrastructure.
+- Automated tests or a verified Android build. The code has been committed to GitHub but has not yet been compiled or tested on physical devices.
 
 ## Requirements
 - Android Studio with JDK 17
 - Android SDK 35
 - Android 8.0 (API 26) or newer
+- A phone with Bluetooth LE support for nearby discovery
 
 ## Build
-Open this repository in Android Studio and let Gradle sync. Run the `app` configuration on an Android device or emulator.
+Open this repository in Android Studio and let Gradle sync. Run the `app` configuration on a physical Android device. BLE behavior should be tested with two devices; emulator behavior varies.
 
-## First milestone
-1. Create/edit a local profile.
-2. Persist profile data encrypted on-device.
-3. Add opt-in discovery with ephemeral identifiers.
-4. Implement and test BLE discovery.
-5. Add WebRTC data channels with an audited signaling implementation.
-6. Add verified encryption, block/report, consent-based photo sharing, and abuse controls before public release.
+## Next milestone
+1. Build and test the app on two Android phones.
+2. Add a privacy-preserving, authenticated exchange that maps an ephemeral BLE encounter to a user-approved profile card.
+3. Add peer authentication and encrypted messaging using reviewed protocols/libraries.
+4. Add block/report, consent-based photo sharing, rate limits, and abuse controls.
+5. Add WebRTC data channels and an authenticated signaling service for internet connections.
 
 ## Privacy notes
-A P2P architecture does not automatically make an app anonymous. IP addresses can be visible to peers during direct connections; BLE advertisements can be observed nearby; screenshots and recipient copies cannot be reliably prevented. Do not advertise exact GPS coordinates or place profile details in BLE advertisements.
+Pseudonymous does not mean anonymous. BLE advertisements can be observed nearby, and direct internet peer connections may expose IP addresses. The current BLE token is random and rotates, but an observer may still correlate radio activity during a rotation window. Never put names, age, preferences, photos, or GPS coordinates in advertisements.
