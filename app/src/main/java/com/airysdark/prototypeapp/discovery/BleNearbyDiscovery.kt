@@ -9,7 +9,6 @@ import android.bluetooth.le.AdvertiseSettings
 import android.bluetooth.le.BluetoothLeAdvertiser
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
@@ -32,7 +31,7 @@ import java.security.SecureRandom
 import java.util.UUID
 
 /**
- * BLE presence only. Advertisements contain an app service UUID and an 8-byte random,
+ * BLE presence only. Advertisements contain an app service-data UUID and an 8-byte random,
  * rotating token; they never contain profile data, a permanent identity, or GPS.
  * This is discovery, not authentication or a private messaging channel.
  */
@@ -108,12 +107,13 @@ class BleNearbyDiscovery(context: Context) : NearbyDiscovery {
         return runCatching {
             scanner = localScanner
             advertiser = localAdvertiser
-            val filter = ScanFilter.Builder().setServiceUuid(serviceUuid).build()
+            // Service data embeds the custom 128-bit UUID; filtering by advertised service UUID
+            // would miss devices that fit the UUID only in the service-data structure.
             val settings = ScanSettings.Builder()
-                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
                 .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
                 .build()
-            localScanner.startScan(listOf(filter), settings, scanCallback)
+            localScanner.startScan(null, settings, scanCallback)
             scanning = true
             startAdvertising(localAdvertiser)
             rotationJob?.cancel()
@@ -166,9 +166,10 @@ class BleNearbyDiscovery(context: Context) : NearbyDiscovery {
 
     private fun startAdvertising(target: BluetoothLeAdvertiser) {
         if (!hasRequiredPermissions()) return
+        // Do not also add the UUID list: repeating a 128-bit UUID can exceed the 31-byte
+        // legacy advertising payload. The service-data field itself carries the UUID + token.
         val data = AdvertiseData.Builder()
             .setIncludeDeviceName(false)
-            .addServiceUuid(serviceUuid)
             .addServiceData(serviceUuid, currentToken)
             .build()
         val settings = AdvertiseSettings.Builder()
