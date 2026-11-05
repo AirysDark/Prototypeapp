@@ -143,7 +143,9 @@ class BleNearbyDiscovery(context: Context) : NearbyDiscovery {
         }.map { Unit }
     }
 
-    override suspend fun stop() {
+    override suspend fun stop() = stopNow()
+
+    private fun stopNow() {
         rotationJob?.cancel()
         cleanupJob?.cancel()
         if (hasRequiredPermissions()) {
@@ -161,6 +163,7 @@ class BleNearbyDiscovery(context: Context) : NearbyDiscovery {
     }
 
     fun close() {
+        stopNow()
         scope.cancel()
     }
 
