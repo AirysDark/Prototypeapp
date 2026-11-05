@@ -206,7 +206,7 @@ class BleNearbyDiscovery(context: Context) : NearbyDiscovery {
     private fun newToken() = ByteArray(TOKEN_BYTES).also(random::nextBytes)
 
     private fun ByteArray.toHex(): String =
-        joinToString(separator = "") { byte -> "%02x".format(byte) }
+        joinToString(separator = "") { byte -> "%02x".format(byte.toInt() and 0xff) }
 
     companion object {
         private const val TOKEN_BYTES = 8
