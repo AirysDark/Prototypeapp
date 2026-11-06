@@ -17,6 +17,7 @@ Implemented:
 - BLE scanning and non-connectable advertising using custom service data.
 - Runtime Bluetooth permission requests for Android 12+ and location permission for older Android versions.
 - A visible start/stop control, foreground-only discovery, temporary nearby IDs, and stale-peer cleanup.
+- Immediate opt-out persistence and a confirmation-protected control to delete the encrypted local profile.
 
 Not implemented:
 - Exchanging profiles or proving that a nearby token belongs to a specific person.
