@@ -38,4 +38,6 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     debugImplementation("androidx.compose.ui:ui-tooling")
     testImplementation("junit:junit:4.13.2")
+    // Android provides org.json at runtime; JVM unit tests need a JVM implementation.
+    testImplementation("org.json:json:20240303")
 }
