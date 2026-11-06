@@ -9,7 +9,7 @@ A local-first, pseudonymous Android app for consensual dating and hookups betwee
 - BLE uses a random 8-byte token that rotates every 15 minutes.
 - Safety controls (block, report, visibility off) are required before public release.
 
-## Current status — v0.2.0
+## Current status — v0.2.1
 Implemented:
 - Native Kotlin + Jetpack Compose profile editor with age validation (18+) and data-layer limits for pseudonym, bio, and preferences.
 - AES-GCM encrypted local profile storage using an Android Keystore key.
