@@ -73,7 +73,14 @@ fun HomeScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = discoverable, onCheckedChange = {
                     discoverable = it
-                    if (!it) onStopDiscovery()
+                    if (!it) {
+                        // Hiding is immediate: stop radio discovery and persist the opt-out
+                        // without requiring the user to press Save separately.
+                        onStopDiscovery()
+                        val safeAge = ageText.toIntOrNull()?.coerceIn(18, 120) ?: initialProfile.age
+                        onSaveProfile(Profile(name.trim(), safeAge, bio.trim(), lookingFor.trim(), false))
+                        status = "Nearby visibility disabled and saved."
+                    }
                 })
                 Column {
                     Text("Opt into nearby discovery")
