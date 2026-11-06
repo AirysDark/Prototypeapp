@@ -9,7 +9,7 @@ A local-first, pseudonymous Android app for consensual dating and hookups betwee
 - BLE uses a random 8-byte token that rotates every 15 minutes.
 - Safety controls (block, report, visibility off) are required before public release.
 
-## Current status — v0.2.1
+## Current status — v0.2.1 + mesh-core prototype
 Implemented:
 - Native Kotlin + Jetpack Compose profile editor with age validation (18+) and data-layer limits for pseudonym, bio, and preferences.
 - AES-GCM encrypted local profile storage using an Android Keystore key.
@@ -22,7 +22,7 @@ Implemented:
 Not implemented:
 - Exchanging profiles or proving that a nearby token belongs to a specific person.
 - Authenticated peer handshakes, private chat, WebRTC, signaling, photo sharing, block/report flows, or server infrastructure.
-- Automated tests or physical-device validation. A GitHub Actions debug build completed successfully for commit `591c4697`; the workflow now also uploads the generated APK as a downloadable artifact for subsequent successful runs.
+- BLE GATT profile exchange, authenticated sessions, encryption for mesh packets, active multi-hop transport, reply routing, completion notices, private chat, WebRTC, photo sharing, block/report flows, or physical-device validation. The mesh protocol core is an initial transport-independent foundation only.
 
 ## Requirements
 - Android Studio with JDK 17
@@ -34,14 +34,14 @@ Not implemented:
 Open this repository in Android Studio and let Gradle sync. Run the `app` configuration on a physical Android device. BLE behavior should be tested with two devices; emulator behavior varies.
 
 ## Next milestone
-1. Build and test the app on two Android phones.
-2. Add a privacy-preserving, authenticated exchange that maps an ephemeral BLE encounter to a user-approved profile card.
-3. Add peer authentication and encrypted messaging using reviewed protocols/libraries.
-4. Add block/report, consent-based photo sharing, rate limits, and abuse controls.
-5. Add WebRTC data channels and an authenticated signaling service for internet connections.
+1. Add unit tests for mesh packet validation, duplicate suppression, hop limits, matching, and expiry.
+2. Add explicit consent settings for profile sharing and relaying.
+3. Implement authenticated BLE GATT connections and a bounded, encrypted transport envelope.
+4. Wire the mesh search/cache/relay core into real peer connections, including result routing and completion notices.
+5. Add end-to-end encrypted store-and-forward messaging, then abuse controls and optional internet connectivity.
 
 ## Privacy notes
-Pseudonymous does not mean anonymous. BLE advertisements can be observed nearby, and direct internet peer connections may expose IP addresses. The current BLE token is random and rotates, but an observer may still correlate radio activity during a rotation window. Never put names, age, preferences, photos, or GPS coordinates in advertisements.
+Pseudonymous does not mean anonymous. BLE advertisements can be observed nearby, and direct internet peer connections may expose IP addresses. The current BLE token is random and rotates, but an observer may still correlate radio activity during a rotation window. Never put names, age, preferences, photos, or GPS coordinates in advertisements. The new mesh protocol core is not encrypted or connected to a transport yet; do not treat it as ready to exchange real user data.
 
 ## Build and release an APK
 
