@@ -42,3 +42,26 @@ Open this repository in Android Studio and let Gradle sync. Run the `app` config
 
 ## Privacy notes
 Pseudonymous does not mean anonymous. BLE advertisements can be observed nearby, and direct internet peer connections may expose IP addresses. The current BLE token is random and rotates, but an observer may still correlate radio activity during a rotation window. Never put names, age, preferences, photos, or GPS coordinates in advertisements.
+
+## Build and release an APK
+
+### Automatic debug builds
+Every push to `main` and pull request targeting `main` runs the Android build workflow. Successful runs upload `prototypeapp-debug-apk` for 14 days.
+
+1. Open [GitHub Actions](https://github.com/AirysDark/Prototypeapp/actions).
+2. Select a successful **Android build** run.
+3. Under **Artifacts**, download `prototypeapp-debug-apk` and extract the ZIP.
+
+### Publish a versioned APK release
+The **Build and release APK** workflow runs when a version tag such as `v0.2.1` is pushed. It builds an installable debug-signed APK, calculates its SHA-256 checksum, and attaches both files to a GitHub Release.
+
+From a local clone with the latest `main`:
+```bash
+git checkout main
+git pull
+git tag v0.2.1
+git push origin v0.2.1
+```
+Use a new version number for each release. The workflow checks that the tag follows a version pattern and publishes release notes automatically. You can also run the workflow manually from **Actions → Build and release APK → Run workflow**, providing a tag that already exists.
+
+**Signing limitation:** these are prototype/debug-signed APKs for direct testing, not production or Google Play releases. GitHub-hosted runners generate their debug signing key on the runner, so a later APK may not install as an update over an earlier one. For stable in-place updates and production distribution, configure a persistent release keystore using GitHub Actions secrets and a dedicated release-signing workflow. Never commit a keystore or its passwords to the repository.
