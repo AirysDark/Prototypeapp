@@ -9,9 +9,10 @@ A local-first, pseudonymous Android app for consensual dating and hookups betwee
 - BLE uses a random 8-byte token that rotates every 15 minutes.
 - Safety controls (block, report, visibility off) are required before public release.
 
-## Current status — v0.2.1 + mesh-core prototype
+## Current status — v0.2.1 core-app work
 Implemented:
-- Native Kotlin + Jetpack Compose profile editor with age validation (18+) and data-layer limits for pseudonym, bio, and preferences.
+- Native Kotlin + Jetpack Compose profile editor with required display name, age validation (18–120), a live profile preview, bio character counter, and data-layer limits for pseudonym, bio, and preferences.
+- Unit tests for profile JSON round-tripping, safe defaults, field limits, and the default-off discoverability setting.
 - AES-GCM encrypted local profile storage using an Android Keystore key.
 - Local pseudonymous ID.
 - BLE scanning and non-connectable advertising using custom service data.
@@ -33,12 +34,17 @@ Not implemented:
 ## Build
 Open this repository in Android Studio and let Gradle sync. Run the `app` configuration on a physical Android device. BLE behavior should be tested with two devices; emulator behavior varies.
 
-## Next milestone
-1. Add unit tests for mesh packet validation, duplicate suppression, hop limits, matching, and expiry.
-2. Add explicit consent settings for profile sharing and relaying.
-3. Implement authenticated BLE GATT connections and a bounded, encrypted transport envelope.
-4. Wire the mesh search/cache/relay core into real peer connections, including result routing and completion notices.
-5. Add end-to-end encrypted store-and-forward messaging, then abuse controls and optional internet connectivity.
+## Next milestone — finish the core app first
+Networking expansion is paused. Priorities are to make the existing app's user-facing features complete and honest before adding new transport systems.
+
+1. Finish profile editing, validation, preview, and clear save/delete feedback.
+2. Improve nearby discovery states, permission-denial guidance, and empty/error states.
+3. Add usable profile-detail and connection-request screens only when their data flow is real; do not show fake matches or pretend requests have been sent.
+4. Add local block/mute controls and privacy settings, with clear limits until remote identity exists.
+5. Run unit tests and the APK build, then test the existing discovery flow on two physical Android phones.
+6. Revisit profile exchange, chat, and mesh networking only after the core screens and safety behavior are stable.
+
+The mesh protocol code is experimental and is not connected to the user interface or a transport. It is deliberately not the current development priority.
 
 ## Privacy notes
 Pseudonymous does not mean anonymous. BLE advertisements can be observed nearby, and direct internet peer connections may expose IP addresses. The current BLE token is random and rotates, but an observer may still correlate radio activity during a rotation window. Never put names, age, preferences, photos, or GPS coordinates in advertisements. The new mesh protocol core is not encrypted or connected to a transport yet; do not treat it as ready to exchange real user data.
