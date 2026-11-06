@@ -94,10 +94,25 @@ fun HomeScreen(
                 label = { Text("Display name") }, singleLine = true, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(value = ageText, onValueChange = { ageText = it.filter(Char::isDigit).take(3) },
                 label = { Text("Age (18+)") }, singleLine = true, modifier = Modifier.fillMaxWidth())
-            OutlinedTextField(value = bio, onValueChange = { bio = it.take(240) },
-                label = { Text("Bio") }, minLines = 3, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(
+                value = bio,
+                onValueChange = { bio = it.take(240) },
+                label = { Text("Bio") },
+                supportingText = { Text("${bio.length}/240 characters") },
+                minLines = 3,
+                modifier = Modifier.fillMaxWidth()
+            )
             OutlinedTextField(value = lookingFor, onValueChange = { lookingFor = it.take(80) },
                 label = { Text("Looking for") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text("Profile preview", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
+                    Text(name.trim().ifEmpty { "Your display name" }, style = androidx.compose.material3.MaterialTheme.typography.titleLarge)
+                    Text(ageText.toIntOrNull()?.takeIf { it in 18..120 }?.let { "Age $it" } ?: "Age not valid yet")
+                    Text(bio.trim().ifEmpty { "Your bio will appear here." })
+                    Text("Looking for: ${lookingFor.trim().ifEmpty { "Not specified" }}")
+                }
+            }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = discoverable, onCheckedChange = {
                     discoverable = it
@@ -117,11 +132,13 @@ fun HomeScreen(
             }
             Button(onClick = {
                 val age = ageText.toIntOrNull()
-                if (age == null || age < 18 || age > 120) {
-                    status = "Enter a valid age of 18 or older."
-                } else {
-                    onSaveProfile(Profile(name.trim(), age, bio.trim(), lookingFor.trim(), discoverable))
-                    status = "Profile saved encrypted on this device."
+                when {
+                    name.trim().isEmpty() -> status = "Choose a display name before saving your profile."
+                    age == null || age < 18 || age > 120 -> status = "Enter a valid age between 18 and 120."
+                    else -> {
+                        onSaveProfile(Profile(name.trim(), age, bio.trim(), lookingFor.trim(), discoverable))
+                        status = "Profile saved encrypted on this device."
+                    }
                 }
             }, modifier = Modifier.fillMaxWidth()) { Text("Save profile") }
             Text(status)
