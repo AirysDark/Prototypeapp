@@ -11,7 +11,7 @@ A local-first, pseudonymous Android app for consensual dating and hookups betwee
 
 ## Current status — v0.2.0
 Implemented:
-- Native Kotlin + Jetpack Compose profile editor with age validation (18+).
+- Native Kotlin + Jetpack Compose profile editor with age validation (18+) and data-layer limits for pseudonym, bio, and preferences.
 - AES-GCM encrypted local profile storage using an Android Keystore key.
 - Local pseudonymous ID.
 - BLE scanning and non-connectable advertising using custom service data.
