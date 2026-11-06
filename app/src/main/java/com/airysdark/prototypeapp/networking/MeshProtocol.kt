@@ -284,7 +284,6 @@ class MeshRelayLedger(
         val entry = entries[requestId] ?: return false
         entry.completed = true
         entry.previousHopPeerId = null
-        entry.expiresAtMillis.coerceAtMost(nowMillis + stateTtlMillis)
         return true
     }
 
