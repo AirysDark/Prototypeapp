@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
@@ -15,6 +16,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -36,6 +38,7 @@ fun HomeScreen(
     nearbyPeers: List<NearbyPeer>,
     discoveryStatus: String,
     onSaveProfile: (Profile) -> Unit,
+    onClearProfile: () -> Unit,
     onStartDiscovery: () -> Unit,
     onStopDiscovery: () -> Unit
 ) {
@@ -45,6 +48,31 @@ fun HomeScreen(
     var lookingFor by remember { mutableStateOf(initialProfile.lookingFor) }
     var discoverable by remember { mutableStateOf(initialProfile.discoverable) }
     var status by remember { mutableStateOf("Profile is stored on this device.") }
+    var showClearDialog by remember { mutableStateOf(false) }
+
+    if (showClearDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearDialog = false },
+            title = { Text("Delete local profile?") },
+            text = { Text("This deletes the encrypted profile stored by this app. Your separate local pseudonymous ID remains on this device.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    onStopDiscovery()
+                    onClearProfile()
+                    name = ""
+                    ageText = "18"
+                    bio = ""
+                    lookingFor = "Chat and meet"
+                    discoverable = false
+                    status = "Local profile deleted."
+                    showClearDialog = false
+                }) { Text("Delete profile") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearDialog = false }) { Text("Cancel") }
+            }
+        )
+    }
 
     Scaffold(topBar = { TopAppBar(title = { Text("Prototypeapp") }) }) { insets ->
         Column(
@@ -97,6 +125,9 @@ fun HomeScreen(
                 }
             }, modifier = Modifier.fillMaxWidth()) { Text("Save profile") }
             Text(status)
+            TextButton(onClick = { showClearDialog = true }) {
+                Text("Delete local profile")
+            }
             HorizontalDivider()
             Text("Nearby discovery", style = androidx.compose.material3.MaterialTheme.typography.titleLarge)
             Text("BLE presence only. This does not yet exchange profiles, authenticate peers, or provide chat.")
