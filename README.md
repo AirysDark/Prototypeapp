@@ -22,7 +22,7 @@ Implemented:
 Not implemented:
 - Exchanging profiles or proving that a nearby token belongs to a specific person.
 - Authenticated peer handshakes, private chat, WebRTC, signaling, photo sharing, block/report flows, or server infrastructure.
-- Automated tests or a verified Android build. The code has been committed to GitHub but has not yet been compiled or tested on physical devices.
+- Automated tests or physical-device validation. A GitHub Actions debug build completed successfully for commit `591c4697`; the workflow now also uploads the generated APK as a downloadable artifact for subsequent successful runs.
 
 ## Requirements
 - Android Studio with JDK 17
