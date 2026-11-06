@@ -68,21 +68,21 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build release APK
-        run: gradle --no-daemon :app:assembleRelease
+      - name: Build installable debug-signed APK
+        run: gradle --no-daemon :app:assembleDebug
 
       - name: Prepare versioned APK and checksum
         shell: bash
         run: |
           mkdir -p release-assets
-          cp app/build/outputs/apk/release/app-release-unsigned.apk "release-assets/Prototypeapp-${RELEASE_TAG}-unsigned.apk"
+          cp app/build/outputs/apk/debug/app-debug.apk "release-assets/Prototypeapp-${RELEASE_TAG}-debug-signed.apk"
           cd release-assets
-          sha256sum "Prototypeapp-${RELEASE_TAG}-unsigned.apk" > "Prototypeapp-${RELEASE_TAG}-unsigned.apk.sha256"
+          sha256sum "Prototypeapp-${RELEASE_TAG}-debug-signed.apk" > "Prototypeapp-${RELEASE_TAG}-debug-signed.apk.sha256"
 
       - name: Upload APK build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Prototypeapp-${{ env.RELEASE_TAG }}-unsigned-apk
+          name: Prototypeapp-${{ env.RELEASE_TAG }}-debug-signed-apk
           path: release-assets/*
           if-no-files-found: error
           retention-days: 30
@@ -95,5 +95,5 @@ jobs:
           prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || contains(env.RELEASE_TAG, '-') }}
           generate_release_notes: true
           files: |
-            release-assets/Prototypeapp-${{ env.RELEASE_TAG }}-unsigned.apk
-            release-assets/Prototypeapp-${{ env.RELEASE_TAG }}-unsigned.apk.sha256
+            release-assets/Prototypeapp-${{ env.RELEASE_TAG }}-debug-signed.apk
+            release-assets/Prototypeapp-${{ env.RELEASE_TAG }}-debug-signed.apk.sha256
