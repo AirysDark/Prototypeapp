@@ -46,6 +46,7 @@ class MainActivity : ComponentActivity() {
                     nearbyPeers = peers,
                     discoveryStatus = discoveryStatus.value,
                     onSaveProfile = profileStore::save,
+                    onClearProfile = profileStore::clear,
                     onStartDiscovery = {
                         val required = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                             arrayOf(
