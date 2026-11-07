@@ -136,30 +136,13 @@ fun HomeScreen(
         ) {
             when (section) {
                 AppSection.Discover -> {
-                    Text("Meet on your terms", style = androidx.compose.material3.MaterialTheme.typography.headlineMedium)
-                    Text("Discover nearby adults without publishing your real identity.")
-                    Card(Modifier.fillMaxWidth()) {
-                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("Nearby discovery", style = androidx.compose.material3.MaterialTheme.typography.titleLarge)
-                            Text("Discovery is opt-in. The current prototype detects temporary Bluetooth presence only; it does not yet receive profiles or support messaging.")
-                            Text(discoveryStatus)
-                            Button(
-                                onClick = onStartDiscovery,
-                                enabled = discoverable,
-                                modifier = Modifier.fillMaxWidth()
-                            ) { Text("Start discovery") }
-                            TextButton(onClick = onStopDiscovery, modifier = Modifier.fillMaxWidth()) {
-                                Text("Stop discovery")
-                            }
-                        }
-                    }
+                    Text("Discover", style = androidx.compose.material3.MaterialTheme.typography.headlineMedium)
+                    Text("Nearby profiles will appear here when people choose to share their profiles.")
                     if (nearbyPeers.isEmpty()) {
-                        Card(Modifier.fillMaxWidth()) {
-                            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                Text("No nearby profiles yet", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
-                                Text("Turn on visibility in Profile, then start discovery. Nearby devices currently appear as temporary device entries, not completed dating profiles.")
-                            }
-                        }
+                        EmptyFeatureCard(
+                            title = "No profiles to show yet",
+                            body = "Nearby discovery is controlled in Settings. The current prototype can detect temporary Bluetooth presence, but it does not yet exchange dating profiles."
+                        )
                     } else {
                         Text("Nearby devices · ${nearbyPeers.size}", style = androidx.compose.material3.MaterialTheme.typography.titleLarge)
                         nearbyPeers.forEach { peer ->
@@ -274,8 +257,24 @@ fun HomeScreen(
                     }
                     Card(Modifier.fillMaxWidth()) {
                         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("Privacy controls", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
+                            Text("Nearby discovery", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
+                            Text("Discovery is opt-in. This prototype detects temporary Bluetooth presence only; it does not yet receive profiles or support messaging.")
                             Text("Nearby visibility: ${if (discoverable) "On" else "Off"}")
+                            Text(discoveryStatus)
+                            Button(
+                                onClick = onStartDiscovery,
+                                enabled = discoverable,
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("Start discovery") }
+                            TextButton(onClick = onStopDiscovery, modifier = Modifier.fillMaxWidth()) {
+                                Text("Stop discovery")
+                            }
+                            Text("Profile exchange and messaging are not implemented yet.")
+                        }
+                    }
+                    Card(Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text("Privacy controls", style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
                             Text("Block/report, data export, and conversation deletion controls still need implementation.")
                             Button(onClick = {
                                 discoverable = false
