@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Person
@@ -37,10 +36,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.airysdark.prototypeapp.data.Profile
-import com.airysdark.prototypeapp.networking.NearbyPeer
 
 private enum class AppSection(val label: String) {
-    Discover("Discover"),
     Chats("Chats"),
     Requests("Requests"),
     Profile("Profile"),
@@ -52,7 +49,6 @@ private enum class AppSection(val label: String) {
 fun HomeScreen(
     initialProfile: Profile,
     pseudonymousId: String,
-    nearbyPeers: List<NearbyPeer>,
     discoveryStatus: String,
     onSaveProfile: (Profile) -> Unit,
     onClearProfile: () -> Unit,
@@ -100,30 +96,24 @@ fun HomeScreen(
                 NavigationBarItem(
                     selected = selectedSection == 0,
                     onClick = { selectedSection = 0 },
-                    icon = { androidx.compose.material3.Icon(Icons.Filled.Explore, contentDescription = null) },
-                    label = { Text("Discover") }
-                )
-                NavigationBarItem(
-                    selected = selectedSection == 1,
-                    onClick = { selectedSection = 1 },
                     icon = { androidx.compose.material3.Icon(Icons.Filled.Forum, contentDescription = null) },
                     label = { Text("Chats") }
                 )
                 NavigationBarItem(
-                    selected = selectedSection == 2,
-                    onClick = { selectedSection = 2 },
+                    selected = selectedSection == 1,
+                    onClick = { selectedSection = 1 },
                     icon = { androidx.compose.material3.Icon(Icons.Filled.Favorite, contentDescription = null) },
                     label = { Text("Requests") }
                 )
                 NavigationBarItem(
-                    selected = selectedSection == 3,
-                    onClick = { selectedSection = 3 },
+                    selected = selectedSection == 2,
+                    onClick = { selectedSection = 2 },
                     icon = { androidx.compose.material3.Icon(Icons.Filled.Person, contentDescription = null) },
                     label = { Text("Profile") }
                 )
                 NavigationBarItem(
-                    selected = selectedSection == 4,
-                    onClick = { selectedSection = 4 },
+                    selected = selectedSection == 3,
+                    onClick = { selectedSection = 3 },
                     icon = { androidx.compose.material3.Icon(Icons.Filled.Settings, contentDescription = null) },
                     label = { Text("Settings") }
                 )
@@ -135,29 +125,6 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             when (section) {
-                AppSection.Discover -> {
-                    Text("Discover", style = androidx.compose.material3.MaterialTheme.typography.headlineMedium)
-                    Text("Nearby profiles will appear here when people choose to share their profiles.")
-                    if (nearbyPeers.isEmpty()) {
-                        EmptyFeatureCard(
-                            title = "No profiles to show yet",
-                            body = "Nearby discovery is controlled in Settings. The current prototype can detect temporary Bluetooth presence, but it does not yet exchange dating profiles."
-                        )
-                    } else {
-                        Text("Nearby devices · ${nearbyPeers.size}", style = androidx.compose.material3.MaterialTheme.typography.titleLarge)
-                        nearbyPeers.forEach { peer ->
-                            Card(Modifier.fillMaxWidth()) {
-                                Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                                    Text(peer.displayName, style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
-                                    Text("Temporary ID: ${peer.ephemeralId.take(8)}…")
-                                    Text(peer.transport)
-                                    Text("Profile exchange is not implemented yet.")
-                                }
-                            }
-                        }
-                    }
-                }
-
                 AppSection.Chats -> {
                     Text("Chats", style = androidx.compose.material3.MaterialTheme.typography.headlineMedium)
                     Text("Your private conversations will live here.")
