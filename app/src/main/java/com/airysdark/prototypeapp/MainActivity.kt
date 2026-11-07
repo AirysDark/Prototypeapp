@@ -38,12 +38,10 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val peers by discovery.nearbyPeers.collectAsState()
             PrototypeApp {
                 HomeScreen(
                     initialProfile = profileStore.load(),
                     pseudonymousId = identity.getOrCreateId(),
-                    nearbyPeers = peers,
                     discoveryStatus = discoveryStatus.value,
                     onSaveProfile = profileStore::save,
                     onClearProfile = profileStore::clear,
